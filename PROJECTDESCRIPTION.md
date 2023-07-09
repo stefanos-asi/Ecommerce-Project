@@ -29,6 +29,6 @@ The objective of this project was to provide the audience with some key statisti
 
 --The monthly sales pattern of each product detecting seasonality and best months 
 
---The size of difference between the top products in terms of sales, orders and returnship behaviour
+--The size of difference between the top products in terms of sales, orders and returnship behaviour compared to all others using percentile ranking
 
 --The smoothed trend of each product's sales and the prediction the trend's movement
