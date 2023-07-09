@@ -1,0 +1,225 @@
+--create table
+CREATE table ecommerce
+(invoice_num varchar,
+ stock_code varchar,
+ description varchar,
+ quantity int,
+ invoice_date date,
+ price decimal,
+ customer_id int,
+ Country varchar
+)
+;
+--Profiling
+--Checking for each column for null values
+SELECT * FROM ecommerce WHERE customer_id  is null;
+/* The same for the rest of the columns */
+/* Customer_id column has 2000 null values that will be excluded FROM the final analysis */
+/* There are 1454 products without product description that will be excluded */
+--Cleaning old dataset to create a new one
+SELECT invoice_num,
+upper(stock_code) as stock_code,
+description,
+quantity,
+concat(right(split_part(invoice_date,' ',1),4),'-',split_part(split_part(invoice_date,' ',1),'/',1),
+'-',split_part(split_part(invoice_date,' ',1),'/',2))::date as date,
+price,
+customer_id,
+upper(country) as country
+FROM 
+ecommerce
+WHERE customer_id is not null and description is not null and description !~'[?]+'
+and description<>lower(description) and description<>initcap(description) 
+and stock_code !~ ‘[A-Z][A-Z]+’
+ORDER BY date Asc;
+/* Standardized  stock_id , transformed date column into date format, 
+got rid of nulls and cleaned description column out of various randomized characters including the question mark 
+and some random descriptions as well as stock_code column where we excluded those with one or more instances of two consecutive letters */
+
+--A newly saved, cleaned csv will be used in further analysis
+
+--% of 5 top products monthly sales in total monthly sales
+SELECT 
+stock_code,
+description,
+sales_month,
+sales,
+sum(sales) over (PARTITION  BY date_part('month',sales_month)) as total_monthly,
+ (sales/sum(sales) over (PARTITION  BY date_part('month',sales_month)))*100 as pct_of_total_monthly,
+sum(sales) over (PARTITION  BY stock_code) as total_for_product
+FROM 
+ ( SELECT 
+sum(price*quantity) as sales,
+stock_code,
+description,
+date_trunc('month',invoice_date)::date as sales_month
+FROM ecommerce
+GROUP BY 4,3,2
+ORDER BY 3,2
+) a
+ORDER BY 7 desc ,3 asc
+limit 65;
+/* The subquery gets the monthly sales for every stock code. We used window functions to retrieve the results while the ordering made 
+first by the top products according to total sales and then BY sales_month to get the results in the right order. 
+We limit the results to 65 because we want the results for only the top 5 products and having 13 months in total * 5 products equals 65. */
+
+--Monthly difference in sales for the two best selling products in pivoted form
+SELECT 
+sales_month,
+max(case when stock_code='22423' then '22423' end) as product_1,
+max(case when stock_code='85123A' then '85123A' end) as product_2,
+max(case when stock_code='22423' then sales end) as sales_1,
+max(case when stock_code='85123A' then sales end) as sales_2,
+max(case when stock_code='22423' then sales end)-
+max(case when stock_code='85123A' then sales end) as sales1_minus_sales2,
+max(case when stock_code='22423' then sales end)/
+max(case when stock_code='85123A' then sales end) as index_sales1_to_sales2
+FROM 
+(SELECT
+ date_trunc('month',invoice_date)::date as sales_month,
+ sum(quantity*price) as sales,stock_code
+ FROM ecommerce
+ WHERE stock_code='22423' or stock_code='85123A'
+ GROUP BY 1,3) a
+ GROUP BY 1
+ ORDER BY 1 asc;
+/* It is obvious that except January/2011 and November/2011 the first best selling product was not only above the second in sales, 
+but it had on average more than double the sales of the second */
+
+--% of orders that each of the top 5 best selling products was sold with other products as well
+SELECT
+o.stock_code,o.date,total_orders,total_with_other_products,
+(total_with_other_products/total_orders)*100 as pct_of_all_orders,
+(total_with_other_products/total_orders)*100-
+lag(((total_with_other_products/total_orders)*100*1.0)) over (PARTITION  BY stock_code ORDER BY date) 
+as diff_in_pct_from_previous,
+sum(total_orders) over (PARTITION  BY o.stock_code) as total_orders_for_product,
+sum(sales) over (PARTITION  BY o.stock_code) as total_sales_for_product
+FROM
+    (SELECT 
+    c.stock_code,
+    c.date,
+    sum(c.orders) as total_orders,
+     sum(e.orders) as total_with_other_products,
+     sales
+     FROM 
+  (SELECT date_trunc('month',invoice_date) as date,stock_code,
+   count(invoice_num) as orders,sum(price*quantity) as sales
+   FROM ecommerce
+   GROUP BY 1,2
+  ) c
+ LEFT JOIN 
+(
+SELECT stock_code,date_trunc('month',invoice_date) as date,
+	count(invoice_num) as orders
+FROM
+  (SELECT  a.invoice_date,
+  b.invoice_num,
+  a.stock_code
+  FROM ecommerce a
+  JOIN 
+  (SELECT 
+invoice_num,
+count(stock_code) as products
+  FROM ecommerce
+  GROUP BY 1
+ ) b on a.invoice_num=b.invoice_num
+ 		WHERE b.products>1 ) z
+GROUP BY 2,1 ) e  on e.stock_code=c.stock_code and e.date=c.date 
+   GROUP BY 1,2,5) o
+ORDER BY 8 desc, 2 asc
+limit 65;
+/* It is obvious that over 90% of total monthly orders for the top 5 best-selling products include more products except the 
+best-selling product . This makes us conclude that these products credit part of their success in combinational sales */
+
+--6 month moving average and trend prediction for each of the 5 top products
+SELECT 
+date,
+stock_code,
+avg(sales) over (PARTITION BY stock_code order by date rows between 5 preceding and current row)
+as moving_avg_3months,
+sales as monthly_sales,
+sum(sales) over (PARTITION BY stock_code) as total_for_product
+FROM 
+(
+SELECT 
+date_trunc('month',invoice_date) as date,
+stock_code,
+sum(price*quantity) as sales
+FROM
+ecommerce
+GROUP BY 1,2
+) a
+GROUP BY 1,2,4
+ORDER BY 5 desc,1 asc;
+/* The moving average seems to smooth out some of the seasonality that exists in December of 2011 while the trend seems to be 
+negative over the last months of 2011. Monthly sales are below the moving average on the most of last months which indicates 
+continuation of the bearish road as it need a big jump in sales in the first months of 2012 in order to reverse the trend /*
+
+--% of customers who returned to buy each of these 5 top products in an interval of three months after their first purchase
+	--creating common table expression for the subquery for the minimum date of the purchase
+WITH minimum_date_sub as 
+(SELECT
+stock_code,
+customer_id,
+min(invoice_date) as min_date
+FROM ecommerce
+GROUP BY 2,1)
+ -- main code
+SELECT 
+stock_code,
+total_customers_start,
+total_3_months,
+pct_returned_3months,
+ntile(100) over (order by pct_returned_3months) as percentile_rank,
+sales_per_product
+FROM
+(
+SELECT 
+o.stock_code,
+total_customers_start,
+total_3_months,
+(total_3_months*1.0/total_customers_start*1.0)*100 as pct_returned_3months,
+ntile(100) over (order by (total_3_months/total_customers_start)) as percentile_rank,
+sales_per_product
+FROM
+( SELECT 
+ aa.stock_code,
+ total_customers_start,
+ coalesce(total_customers_3months,0) as total_3_months,
+ sum(k.sales) over (PARTITION BY aa.stock_code) as sales_per_product
+ FROM
+  (SELECT 
+  count(customer_id) as total_customers_start,
+   stock_code
+   FROM minimum_date_sub a
+   GROUP BY 2) aa
+   LEFT JOIN 
+   (SELECT 
+   count(customer_id) as total_customers_3months,
+    stock_code
+    FROM 
+  	(SELECT 
+	b.stock_code,b.customer_id,
+	 b.invoice_date
+	 FROM ecommerce b
+	 JOIN 
+	minimum_date_sub bbb 
+	on b.stock_code=bbb.stock_code and b.customer_id=bbb.customer_id
+	 and b.invoice_date>bbb.min_date
+	 WHERE age(b.invoice_date,bbb.min_date)<= interval '3 months'
+	 GROUP BY 2,3,1) bbbb 
+     GROUP BY 2 ) cc on cc.stock_code=aa.stock_code
+    LEFT JOIN
+     (SELECT 
+     stock_code,sum(price*quantity) as sales
+     FROM
+     Ecommerce
+    GROUP BY 1)  k on aa.stock_code=k.stock_code
+   ) o 
+) oo
+ORDER BY 6 desc
+LIMIT 65;
+/* The four best-selling products have a 3-month returnship rate approximately 40% while the 5tth is 5% below. 
+All of them belong in a percentile over 90th which indicates that their Returnship rate is better than at least 90% of all 
+products sold */
