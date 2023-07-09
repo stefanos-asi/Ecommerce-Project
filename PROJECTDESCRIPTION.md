@@ -23,4 +23,4 @@ The objective of this project was to provide the audience with some key statisti
 
 --The size of difference between the top products in terms of sales, orders and returnship behaviour
 
---Forecasting of sales or orders for the preferred time interval of stakeholders
+--The future sales or orders by applying forecasting for the preferred time interval of stakeholders
