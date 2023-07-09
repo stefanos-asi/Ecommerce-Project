@@ -152,8 +152,8 @@ GROUP BY 1,2
 ) a
 GROUP BY 1,2,4
 ORDER BY 5 desc,1 asc;
-/* The moving average seems to smooth out some of the seasonality that exists in December of 2011 while the trend seems to be 
-negative over the last months of 2011. Monthly sales are below the moving average in the vast majority of last months sales which indicates 
+/* The moving average seems to smooth out the seasonality that exists in December of 2011 while the trend seems to be 
+negative over the last months of 2011. Monthly sales are below moving average in the vast majority of last months sales which indicates 
 continuation of the bearish road as only a big hike in future sales can reverse the trend /*
 
 --% of customers who returned to buy each of these 5 top products in an interval of three months after their first purchase
