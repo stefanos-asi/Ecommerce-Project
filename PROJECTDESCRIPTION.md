@@ -22,7 +22,7 @@ This SQL project conducts time series and cohort analysis on the top 5 best-sell
    
    3rd question: leveraged joins in order to get the percent the orders with more products other than the best-selling one
    
-   4th question: Used a window function in order to retrieve the 3-month simple moving average
+   4th question: Used a window function in order to retrieve the 6-month simple moving average
    
 5. Cohort Analysis: Utilized date manipulations and joins in order to generate the returnship rate of each best-seller in a custom date        interval (3 months)
 
