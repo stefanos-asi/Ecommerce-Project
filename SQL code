@@ -11,12 +11,12 @@ CREATE table ecommerce
 )
 ;
 --Profiling
---Checking for each column for null values
+--Checking each column for null values
 SELECT * FROM ecommerce WHERE customer_id  is null;
 /* The same for the rest of the columns */
 /* Customer_id column has 2000 null values that will be excluded FROM the final analysis */
 /* There are 1454 products without product description that will be excluded */
---Cleaning old dataset to create a new one
+--Cleaning columns
 SELECT invoice_num,
 upper(stock_code) as stock_code,
 description,
