@@ -28,10 +28,10 @@ This SQL project conducts time series and cohort analysis on the top 5 best-sell
 
 Conclusion:
 
-The objective of this project was to provide the audience with some key statistics about the top 5 products according to total sales in an interval of 13 months. This analysis can be used to draw conclusions about the best-sellers such as:
+The objective of this project was to provide the audience with some key statistics about the top 5 products, according to total sales, in an interval of 13 months. This analysis can be used to draw valuable conclusions about the best-sellers such as:
 
---The monthly sales pattern of each product detecting seasonality and best months 
+--The monthly sales pattern of each product, detecting seasonality and best months 
 
 --The size of difference between the top products in terms of sales, orders and returnship behaviour compared to all others using percentile ranking
 
---The smoothed trend of each product's sales and the prediction of the future SMA's movement (bullish or bearish)
+--The smoothed trend of each product's sales using SMA and the prediction of the future SMA's movement (bullish or bearish)
