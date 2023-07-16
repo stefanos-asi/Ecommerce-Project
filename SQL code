@@ -137,7 +137,7 @@ SELECT
 date,
 stock_code,
 avg(sales) over (PARTITION BY stock_code order by date rows between 5 preceding and current row)
-as moving_avg_3months,
+as moving_avg_6months,
 sales as monthly_sales,
 sum(sales) over (PARTITION BY stock_code) as total_for_product
 FROM 
