@@ -2,7 +2,7 @@ Dataset Source: https://www.kaggle.com/datasets/carrie1/ecommerce-data?resource=
 
 Description:
 
-This SQL project conducts time series and cohort analysis on the top 5 best-sellers on an ecommerce database.
+This SQL project conducts time series and cohort analysis on the top 5 products of an online store.
    
    Key steps:
 1. Profiling and Cleaning:
