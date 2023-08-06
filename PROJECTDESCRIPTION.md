@@ -32,6 +32,6 @@ The objective of this project was to provide the audience with some key statisti
 
 --The relative size of these products sales in relation with whole dataset's sales
 
---The returnship behaviour of the customers on these products
+--The returnship behaviour of the customers over these products
 
 --The trend of each product's sales using SMA
