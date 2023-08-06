@@ -24,7 +24,7 @@ This SQL project conducts time series and cohort analysis on the top 5 products 
 
 Conclusion:
 
-The objective of this project was to provide the audience with some key statistics about the top 5 products based on the metric of sales, in an interval of 13 months. This analysis can be used to draw valuable insights about the best-sellers such as:
+The objective of this project was to provide the audience with some key statistics about the top 5 products based on the metric of sales and orders, in an interval of 13 months. This analysis can be used to draw valuable insights about the best-sellers such as:
 
 --The monthly sales pattern of each product
 
