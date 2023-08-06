@@ -6,7 +6,7 @@ This SQL project conducts time series and cohort analysis on the top 5 products 
    
    Key steps:
 1. Profiling and Cleaning:
-   Checked for nulls and duplicate values, cleaned and parsed the columnsmby using text parsing functions,data type transformations and regular expressions
+   Checked for nulls and duplicate values, cleaned and parsed the columns by using text parsing functions,data type transformations and regular expressions
 
 2. Created a new and cleaned csv and imported it
 
