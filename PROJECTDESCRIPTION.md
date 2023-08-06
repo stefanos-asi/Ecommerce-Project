@@ -6,30 +6,32 @@ This SQL project conducts time series and cohort analysis on the top 5 products 
    
    Key steps:
 1. Profiling and Cleaning:
-   Checked for nulls and duplicate values, cleaned and parsed the columns in order to get them in the
-    right structure by using the appropriate text parsing functions,data type transformations and regular expressions
+   Checked for nulls and duplicate values, cleaned and parsed the columnsmby using text parsing functions,data type transformations and regular expressions
 
 2. Created a new and cleaned csv and imported it
 
 3. Time series analysis key points of each question:
 
-   1st question: Leveraged window functions in order to generate the monthly sales and find the percent of each product monthly          
-   aggregated
+   1st question: Leveraged window functions in order to generate the monthly sales and find the percentage of each of the 5 top products in total monthly sales 
    
-   2nd question: Applied case statements in order to get the deifference in monthly sales of the two top products in a pivoted form
+   2nd question: Applied case statements in order to calculate the size of difference between the two top products in a pivoted form
    
-   3rd question: leveraged joins in order to get the percent the orders with more products other than the best-selling one
+   3rd question: leveraged joins in order to generate the percentage of orders that the top 5 products were a part of a basket size greater than one 
    
-   4th question: Used a window function in order to retrieve the 6-month simple moving average
+   4th question: Leveraged window functions in order to retrieve the 6-month simple moving average and gain insights on sales trend
    
 5. Cohort Analysis: Utilized date manipulations and joins in order to generate the returnship rate of each best-seller in a custom date        interval (3 months)
 
 Conclusion:
 
-The objective of this project was to provide the audience with some key statistics about the top 5 products, according to total sales, in an interval of 13 months. This analysis can be used to draw valuable conclusions about the best-sellers such as:
+The objective of this project was to provide the audience with some key statistics about the top 5 products based on the metric of sales, in an interval of 13 months. This analysis can be used to draw valuable insights about the best-sellers such as:
 
---The monthly sales pattern of each product, detecting seasonality and best months 
+--The monthly sales pattern of each product
 
---The size of difference between the top products in terms of sales, orders and returnship behaviour compared to all others using percentile ranking
+--The existence of seasonality in their monthly sales
 
---The smoothed trend of each product's sales using SMA and the prediction of the future SMA's movement (bullish or bearish)
+--The relative size of these products in relation with all products
+
+--The returnship behaviour of the customers on these products
+
+--The trend of each product's sales using SMA
