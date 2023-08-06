@@ -30,7 +30,7 @@ The objective of this project was to provide the audience with some key statisti
 
 --The existence of seasonality in their monthly sales
 
---The relative size of these products in relation with all products
+--The relative size of these products sales in relation with whole dataset's sales
 
 --The returnship behaviour of the customers on these products
 
